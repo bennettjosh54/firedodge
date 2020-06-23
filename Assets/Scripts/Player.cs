@@ -14,6 +14,9 @@ public class Player : MonoBehaviour
 
     Rigidbody2D rb;
     Animator anim;
+
+    public GameObject losePanel;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -57,6 +60,7 @@ public class Player : MonoBehaviour
         healthDisplay.text = health.ToString();
         if (health <= 0){
             print("player died");
+            losePanel.SetActive(true);
             Destroy(gameObject);
         }
     }
