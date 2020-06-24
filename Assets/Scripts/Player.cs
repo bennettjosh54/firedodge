@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Player : MonoBehaviour
-{
+public class Player : MonoBehaviour {
 
-    
     public float speed;
     private float input;
     public int health;
@@ -16,12 +14,19 @@ public class Player : MonoBehaviour
     Animator anim;
 
     public GameObject losePanel;
+    AudioSource audioSource;
+
+    //for dash move
+    public float startDashTime;
+    private float dashTime;
+    public float extraSpeed;
+    private bool isDashing;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        audioSource = GetComponent<AudioSource>();
         healthDisplay.text = health.ToString();
     }
 
@@ -42,11 +47,25 @@ public class Player : MonoBehaviour
         else if (input < 0) {
             transform.eulerAngles = new Vector3(0, 180, 0);
         }
+
+        //for dash move
+        if (Input.GetKeyDown(KeyCode.Space) && isDashing == false) {
+            speed += extraSpeed;
+            isDashing = true;
+            dashTime = startDashTime;
+        }
+
+        if (dashTime <= 0 && isDashing == true) {
+            isDashing = false;
+            speed -= extraSpeed;
+        }
+        else {
+            dashTime -= Time.deltaTime;
+        }
     }
 
     // Update is called once per frame
-    void FixedUpdate()
-    {
+    void FixedUpdate() {
         //user input
         input = Input.GetAxisRaw("Horizontal");
         // print(input);
@@ -56,6 +75,7 @@ public class Player : MonoBehaviour
     }
 
     public void TakeDamage(int damageAmount) {
+        audioSource.Play();
         health -= damageAmount;
         healthDisplay.text = health.ToString();
         if (health <= 0){
